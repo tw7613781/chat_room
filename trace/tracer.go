@@ -19,6 +19,11 @@ func (t *tracer) Trace(a ...interface{}) {
 	fmt.Fprintln(t.out)
 }
 
+// New is unknown
+func New(w io.Writer) Tracer {
+	return &tracer{out: w}
+}
+
 type nilTracer struct{}
 
 func (t *nilTracer) Trace(a ...interface{}) {}
@@ -26,9 +31,4 @@ func (t *nilTracer) Trace(a ...interface{}) {}
 // Off creates a Tracer that will ignore calls to Trace
 func Off() Tracer {
 	return &nilTracer{}
-}
-
-// New is unknown
-func New(w io.Writer) Tracer {
-	return &tracer{out: w}
 }
