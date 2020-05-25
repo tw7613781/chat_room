@@ -43,12 +43,15 @@ func main() {
 		github.New("fde707a0e9dfdb1e8d6f", "1b97ef1d4a15344166c538144746278d8588b376", "http://localhost:8080/auth/callback/github"),
 		google.New("key", "secret", "http://localhost:8080/auth/callback/google"),
 	)
-	r := newRoom(UseGravatar)
+	r := newRoom(UseFileSystemAvatar)
 	// r.tracer = trace.New(os.Stdout)
 	http.Handle("/chat", MustAuth(&templateHandler{filename: "chat.html"}))
 	http.Handle("/login", &templateHandler{filename: "login.html"})
+	http.Handle("/upload", &templateHandler{filename: "upload.html"})
+	http.HandleFunc("/uploader", uploaderHandler)
 	http.HandleFunc("/auth/", loginHandler)
 	http.Handle("/room", r)
+	http.Handle("/avatars/", http.StripPrefix("/avatars/", http.FileServer(http.Dir("./avatars"))))
 	http.HandleFunc("/logout", func(w http.ResponseWriter, r *http.Request) {
 		http.SetCookie(w, &http.Cookie{
 			Name:   "auth",
